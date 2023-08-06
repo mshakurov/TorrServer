@@ -1,0 +1,14 @@
+[Unit]
+Description=Rutor Search Service by using torrserver service
+After = syslog.target network.target nss-lookup.target
+
+[Service]
+Type = simple
+ExecStart=/home/shakurov/source/repos/Web/TorrServRutor/TorrServRutor/bin/release/net6.0/publish/TorrServRutor
+WorkingDirectory=/home/shakurov/source/repos/Web/TorrServRutor/TorrServRutor/bin/release/net6.0/publish/
+ExecReload = /bin/kill -HUP ${MAINPID}
+ExecStop = /bin/kill -INT ${MAINPID}
+Restart = on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -5,7 +5,7 @@ After = syslog.target network.target nss-lookup.target
 [Service]
 Type = simple
 Environment="GODEBUG=madvdontneed=1"
-ExecStart = /path/to/torrserver -d /path/to/db/
+ExecStart = /home/shakurov/source/repos/TorrServer/TorrServerMyFork/dist/TorrServer-linux-amd64 --path /home/shakurov/ts/config/ --logpath /home/shakurov/ts/log --weblogpath /home/shakurov/ts/weblog --dontkill --torrentsdir /home/shakurov/ts/torrents/
 ExecReload = /bin/kill -HUP ${MAINPID}
 ExecStop = /bin/kill -INT ${MAINPID}
 TimeoutSec = 30
