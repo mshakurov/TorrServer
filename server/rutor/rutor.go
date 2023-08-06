@@ -126,14 +126,49 @@ func loadDB() {
 			return
 		}
 
+		// --- >>> MShakurov ----
+		fnJsonTemp := filepath.Join(settings.Path, "rutor.json.temp")
+		fnJson := filepath.Join(settings.Path, "rutor.json")
+		ff2, err := os.Create(fnJsonTemp)
+		if err != nil {
+			log.TLogln("Error create json db file:", err)
+			return
+		}
+		defer ff2.Close()
+		ff2.WriteString("[\n")
+		start := true
+		// --- <<< MShakurov ----
+
 		for dec.More() {
 			var torr *models.TorrentDetails
 			err = dec.Decode(&torr)
 			if err == nil {
 				ftorrs = append(ftorrs, torr)
+
+				// --- >>> MShakurov ----
+				j, _ := json.Marshal(torr)
+				if start {
+					start = false
+				} else {
+					ff2.WriteString(",")
+				}
+				ff2.WriteString(string(j))
+				ff2.WriteString("\n")
+				// --- <<< MShakurov ----
+
+			} else {
+				log.TLogln("Error read rutor db:", err)
 			}
 		}
 		torrs = ftorrs
+
+		// --- >>> MShakurov ----
+		ff2.WriteString("]\n")
+		ff2.Close()
+		os.Remove(fnJson)
+		os.Rename(fnJsonTemp, fnJson)
+		// --- <<< MShakurov ----
+
 		log.TLogln("Index rutor db")
 		torrsearch.NewIndex(torrs)
 		log.TLogln("Torrents count:", len(torrs))
