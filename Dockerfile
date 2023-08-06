@@ -1,4 +1,5 @@
 ### FRONT BUILD START ###
+ARG BUILDPLATFORM
 FROM --platform=$BUILDPLATFORM node:16-alpine as front
 COPY ./web /app
 WORKDIR /app
@@ -54,6 +55,7 @@ ENV TS_PORT=8090
 ENV GODEBUG=madvdontneed=1
 
 COPY --from=compressed ./torrserver /usr/bin/torrserver
+COPY --from=compressed ./torrserver /opt/ts/torrserver
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN apk add --no-cache --update ffmpeg
