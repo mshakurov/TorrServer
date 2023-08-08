@@ -3,6 +3,7 @@ package rutor
 import (
 	"compress/flate"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -127,6 +128,8 @@ func loadDB() {
 		}
 
 		// --- >>> MShakurov ----
+		log.TLogln("MRS: Create rutor json db file")
+		recordCount := 0
 		fnJsonTemp := filepath.Join(settings.Path, "rutor.json.temp")
 		fnJson := filepath.Join(settings.Path, "rutor.json")
 		ff2, err := os.Create(fnJsonTemp)
@@ -154,6 +157,7 @@ func loadDB() {
 				}
 				ff2.WriteString(string(j))
 				ff2.WriteString("\n")
+				recordCount += 1
 				// --- <<< MShakurov ----
 
 			} else {
@@ -167,6 +171,7 @@ func loadDB() {
 		ff2.Close()
 		os.Remove(fnJson)
 		os.Rename(fnJsonTemp, fnJson)
+		log.TLogln(fmt.Sprintf("MRS: Rutor json db file created. Records: %d", recordCount))
 		// --- <<< MShakurov ----
 
 		log.TLogln("Index rutor db")
