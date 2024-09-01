@@ -1,5 +1,5 @@
 ### FRONT BUILD START ###
-ARG BUILDPLATFORM
+#ARG BUILDPLATFORM
 FROM --platform=$BUILDPLATFORM node:16-alpine as front
 COPY ./web /app
 WORKDIR /app
