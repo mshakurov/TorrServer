@@ -28,6 +28,28 @@ import (
 // only save
 // http://127.0.0.1:8090/stream/fname?link=...&save&title=...&poster=...
 
+// stream godoc
+//
+//	@Summary		Multi usage endpoint
+//	@Description	Multi usage endpoint.
+//
+//	@Tags			API
+//
+//	@Param			link		query	string	true	"Magnet/hash/link to torrent"
+//	@Param			index		query	string	false	"File index in torrent"
+//	@Param			preload		query	string	false	"Should preload torrent"
+//	@Param			stat		query	string	false	"Get statistics from torrent"
+//	@Param			save		query	string	false	"Should save torrent"
+//	@Param			m3u			query	string	false	"Get torrent as M3U playlist"
+//	@Param			fromlast	query	string	false	"Get M3U from last played file"
+//	@Param			play		query	string	false	"Start stream torrent"
+//	@Param			title		query	string	false	"Set title of torrent"
+//	@Param			poster		query	string	false	"Set poster link of torrent"
+//	@Param			category	query	string	false	"Set category of torrent, used in web: movie, tv, music, other"
+//
+//	@Produce		application/octet-stream
+//	@Success		200	"Data returned according to query"
+//	@Router			/stream [get]
 func stream(c *gin.Context) {
 	link := c.Query("link")
 	indexStr := c.Query("index")
@@ -39,8 +61,11 @@ func stream(c *gin.Context) {
 	_, play := c.GetQuery("play")
 	title := c.Query("title")
 	poster := c.Query("poster")
+	category := c.Query("category")
+
 	data := ""
-	notAuth := c.GetBool("not_auth")
+
+	notAuth := c.GetBool("auth_required") && c.GetString(gin.AuthUserKey) == ""
 
 	if notAuth && (play || m3u) {
 		streamNoAuth(c)
@@ -57,9 +82,10 @@ func stream(c *gin.Context) {
 		return
 	}
 
-	title, _ = url.QueryUnescape(title)
 	link, _ = url.QueryUnescape(link)
+	title, _ = url.QueryUnescape(title)
 	poster, _ = url.QueryUnescape(poster)
+	category, _ = url.QueryUnescape(category)
 
 	spec, err := utils.ParseLink(link)
 	if err != nil {
@@ -72,9 +98,10 @@ func stream(c *gin.Context) {
 		title = tor.Title
 		poster = tor.Poster
 		data = tor.Data
+		category = tor.Category
 	}
 	if tor == nil || tor.Stat == state.TorrentInDB {
-		tor, err = torr.AddTorrent(spec, title, poster, data)
+		tor, err = torr.AddTorrent(spec, title, poster, data, category)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -145,9 +172,6 @@ func streamNoAuth(c *gin.Context) {
 	_, m3u := c.GetQuery("m3u")
 	_, fromlast := c.GetQuery("fromlast")
 	_, play := c.GetQuery("play")
-	title := c.Query("title")
-	poster := c.Query("poster")
-	data := ""
 
 	if link == "" {
 		c.AbortWithError(http.StatusBadRequest, errors.New("link should not be empty"))
@@ -169,12 +193,25 @@ func streamNoAuth(c *gin.Context) {
 		return
 	}
 
-	title = tor.Title
-	poster = tor.Poster
-	data = tor.Data
+	title := c.Query("title")
+	if title == "" {
+		title = tor.Title
+	}
+
+	poster := c.Query("poster")
+	if poster == "" {
+		poster = tor.Poster
+	}
+
+	category := c.Query("category")
+	if category == "" {
+		category = tor.Category
+	}
+
+	data := tor.Data
 
 	if tor.Stat == state.TorrentInDB {
-		tor, err = torr.AddTorrent(spec, title, poster, data)
+		tor, err = torr.AddTorrent(spec, title, poster, data, category)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -204,7 +241,6 @@ func streamNoAuth(c *gin.Context) {
 	if preload {
 		torr.Preload(tor, index)
 	}
-
 	// return m3u if query
 	if m3u {
 		name := strings.ReplaceAll(c.Param("fname"), `/`, "") // strip starting / from param
