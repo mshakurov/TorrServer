@@ -1,5 +1,5 @@
 ### FRONT BUILD START ###
-ARG BUILDPLATFORM
+#ARG BUILDPLATFORM
 FROM --platform=$BUILDPLATFORM node:16-alpine as front
 COPY ./web /app
 WORKDIR /app
@@ -25,8 +25,8 @@ ENV GOARCH=$TARGETARCH
 RUN apk add --update g++ \
 && go run gen_web.go \
 && cd server \
-&& go clean -i -r -cache \
 && go mod tidy \
+&& go clean -i -r -cache \
 && go build -ldflags '-w -s' --o "torrserver" ./cmd 
 ### BUILD TORRSERVER MULTIARCH END ###
 
