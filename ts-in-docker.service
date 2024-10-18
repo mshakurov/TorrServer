@@ -1,0 +1,12 @@
+[Unit]
+Description=TorrentServe rAutoStarted In Docker
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=docker run -d --rm  --name torrserver -v ~/ts-docker/opt:/opt -p 0.0.0.0:8090:8090  torrserver
+ExecStop=docker stop  torrserver
+
+[Install]
+WantedBy=multi-user.target

@@ -1,5 +1,4 @@
 ### FRONT BUILD START ###
-#ARG BUILDPLATFORM
 FROM --platform=$BUILDPLATFORM node:16-alpine as front
 COPY ./web /app
 WORKDIR /app
@@ -20,6 +19,8 @@ ARG TARGETARCH
 
 # Step for multiarch build with docker buildx
 ENV GOARCH=$TARGETARCH
+ENV GOARCH=arm
+# ENV GOARM=7
 
 # Build torrserver
 RUN apk add --update g++ \
@@ -34,6 +35,7 @@ RUN apk add --update g++ \
 ### UPX COMPRESSING START ###
 FROM debian:buster-slim as compressed
 
+COPY --from=builder /opt/src/server/torrserver ./torrserver-nocmp
 COPY --from=builder /opt/src/server/torrserver ./torrserver
 
 RUN apt-get update && apt-get install -y upx-ucl && upx --best --lzma ./torrserver
@@ -55,6 +57,7 @@ ENV TS_PORT=8090
 ENV GODEBUG=madvdontneed=1
 
 COPY --from=compressed ./torrserver /usr/bin/torrserver
+COPY --from=compressed ./torrserver-nocmp /opt/ts/torrserver-nocmp
 COPY --from=compressed ./torrserver /opt/ts/torrserver
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 
