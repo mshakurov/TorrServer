@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+
+command="/usr/sbin/torrserver"
+command_args="--path /root/ts/config/ --logpath /root/ts/log --weblogpath /root/ts/weblog --dontkill --torrentsdir /root/ts/torrents/"
+command_background=true
+pidfile="/run/torrserver.pid"
+
+description="TorrServer"
+name="TorrServer"
+
+depend() {
+        need net
+}
