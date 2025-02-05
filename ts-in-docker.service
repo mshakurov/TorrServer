@@ -1,11 +1,13 @@
 [Unit]
-Description=TorrentServe rAutoStarted In Docker
+Description=TorrentServer AutoStarted In Docker
 Requires=docker.service
-After=docker.service
+After=docker.service syslog.target network.target nss-lookup.target
 
 [Service]
-Restart=always
-ExecStart=docker run -d --rm  --name torrserver -v ~/ts-docker/opt:/opt -p 0.0.0.0:8090:8090  torrserver
+Type = simple
+Restart = on-failure
+#Restart=always
+ExecStart=docker run -d --rm  --name torrserver -v /root/ts-docker/opt:/opt -p 0.0.0.0:8090:8090 -p 0.0.0.0:8091:8091 torrserver
 ExecStop=docker stop  torrserver
 
 [Install]
