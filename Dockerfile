@@ -63,5 +63,6 @@ COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN apk add --no-cache --update ffmpeg
 
-CMD /docker-entrypoint.sh
+# CMD /docker-entrypoint.sh
+CMD /opt/ts/docker-entrypoint.sh
 ### BUILD MAIN IMAGE end ###
