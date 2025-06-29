@@ -7,6 +7,8 @@ if [[ "$TS_DONTKILL" -eq 1 ]]; then FLAGS="${FLAGS} --dontkill"; fi
 if [[ "$TS_EN_SSL" -eq 1 ]]; then FLAGS="${FLAGS} --ssl"; fi
 if [[ -v "$TS_SSL_PORT" ]]; then FLAGS="${FLAGS} --sslport ${TS_SSL_PORT}"; fi
 
+echo TS_SSL_PORT: $TS_SSL_PORT >/start.txt
+echo TS_SSL_PORT: $TS_EN_SSL >>/start.txt
 
 if [ ! -d $TS_CONF_PATH ]; then
   mkdir -p $TS_CONF_PATH
