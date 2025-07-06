@@ -1,5 +1,12 @@
 #!/bin/sh
 
+TS_PORT=8090
+TS_WEB_LOG_PATH=/opt/ts/weblog
+TS_EN_SSL=1
+TS_SSL_PORT=8091
+
+printenv | grep ^TS_
+
 FLAGS="--path $TS_CONF_PATH --logpath $TS_LOG_PATH --weblogpath $TS_WEB_LOG_PATH --port $TS_PORT --torrentsdir $TS_TORR_DIR"
 if [[ "$TS_HTTPAUTH" -eq 1 ]]; then FLAGS="${FLAGS} --httpauth"; fi
 if [[ "$TS_RDB" -eq 1 ]]; then FLAGS="${FLAGS} --rdb"; fi

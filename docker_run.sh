@@ -1,11 +1,14 @@
 #!/bin/bash
 
-docker run -d --rm  --name torrserver -v /root/ts-docker/opt:/opt -p 0.0.0.0:8973:8090 torrserver
-# docker run -d --rm --name torrserver -v ~/ts-docker/opt:/opt -p 0.0.0.0:9873:8090 -m=500M  torrserver
 docker container ls -a | grep torrserver
 if [ $? -eq 0 ];
 then
 	docker stop torrserver
-    docker rm torrserver
+  docker rm torrserver
 fi
-docker run -d --restart=always --name torrserver -v ~/ts-docker/opt:/opt -p 0.0.0.0:8973:8090 -m=300M  torrserver
+
+# -- --restart always
+# docker run -d --restart always           --name torrserver -v /root/ts-docker/opt:/opt -p 0.0.0.0:8973:8090 -m=300M  torrserver
+
+# -- --restart unless-stopped
+docker run -d --restart unless-stopped   --name torrserver -v /root/ts-docker/opt:/opt -p 0.0.0.0:8973:8090 -p 0.0.0.0:8974:8091 torrserver
