@@ -36,27 +36,11 @@ toolchains/
 /toolchain/
 /test/
 /server/web/pages/template/pages/msx
-<<<<<<< .mine
-rutor.ls
-
-
-
-
-
-=======
 server/config.db
 /server/web/pages/template/pages/
 server/web/pages/template/route.go
 server/server.pem
 server/server.key
 settings.json
->>>>>>> .theirs
 rutor.ls
-
-server/config.db
-/server/web/pages/template/pages/
-server/web/pages/template/route.go
-server/server.pem
-server/server.key
-settings.json
 viewed.json
