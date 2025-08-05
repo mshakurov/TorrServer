@@ -16,6 +16,7 @@ COPY --from=front /app/build /opt/src/web/build
 WORKDIR /opt/src
 
 ARG TARGETARCH
+RUN echo TARGETARCH: $TARGETARCH
 
 # Step for multiarch build with docker buildx
 ENV GOARCH=$TARGETARCH
@@ -42,6 +43,8 @@ RUN apt-get update && apt-get install -y upx-ucl && upx --best --lzma ./torrserv
 # Compress torrserver only for amd64 and arm64 no variant platforms
 ARG TARGETARCH
 ARG TARGETVARIANT
+RUN echo TARGETARCH: $TARGETARCH
+RUN echo TARGETVARIANT: $TARGETVARIANT
 RUN if [ "$TARGETARCH" == 'amd64' ]; then compress=1; elif [ "$TARGETARCH" == 'arm64' ] && [ -z "$TARGETVARIANT"  ]; then compress=1; else compress=0; fi \
  && if [[ "$compress" -eq 1 ]]; then ./upx --best --lzma ./torrserver; fi
 ### UPX COMPRESSING END ###
